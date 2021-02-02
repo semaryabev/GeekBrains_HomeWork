@@ -1,0 +1,136 @@
+1. Создать файл file1 и наполнить его произвольным содержимым. Скопировать его в file2. Создать символическую ссылку file3 на file1. Создать жесткую ссылку file4 на file1. Посмотреть, какие айноды у файлов. Удалить file1. Что стало с остальными созданными файлами? Попробовать вывести их на экран.
+--Выполнение--
+sam@server1:~$ echo "hello world! Mya name is Sam" > file1.txt
+sam@server1:~$ cat file1.txt > file2.txt
+sam@server1:~$ ln -s file1.txt file3.txt
+sam@server1:~$ ln file2.txt file4.txt
+sam@server1:~$ ls -lai
+total 68
+1051639 drwxr-xr-x 5 sam  sam   4096 Feb  1 11:00 .
+1048577 drwxr-xr-x 3 root root  4096 Jan 22 18:55 ..
+1048712 -rw------- 1 sam  sam  12827 Jan 27 21:58 .bash_history
+1051642 -rw-r--r-- 1 sam  sam    220 Feb 25  2020 .bash_logout
+1053724 -rw-r--r-- 1 sam  sam   3873 Jan 26 21:16 .bashrc
+1051680 drwx------ 3 sam  sam   4096 Jan 22 20:11 .cache
+1053030 drwx------ 5 sam  sam   4096 Jan 26 14:15 .config
+ 268296 drwx------ 3 sam  sam   4096 Jan 22 20:11 .local
+1051641 -rw-r--r-- 1 sam  sam    807 Feb 25  2020 .profile
+1051682 -rw-r--r-- 1 sam  sam      0 Jan 22 18:59 .sudo_as_admin_successful
+1049484 -rw------- 1 sam  sam   8067 Jan 29 20:53 .viminfo
+1049489 -rw-rw-r-- 1 sam  sam     29 Feb  1 10:49 file1.txt
+1049490 -rw-rw-r-- 2 sam  sam     29 Feb  1 10:49 file2.txt
+1049491 lrwxrwxrwx 1 sam  sam      9 Feb  1 10:59 file3.txt -> file1.txt
+1049490 -rw-rw-r-- 2 sam  sam     29 Feb  1 10:49 file4.txt
+###--Айноды у символической и жесткой ссылки разные. Жесткая ссылка с такойже айнодой, символическая получает новую--##
+sam@server1:~$ rm file1.txt
+sam@server1:~$ ls -ila
+total 64
+1051639 drwxr-xr-x 5 sam  sam   4096 Feb  1 11:11 .
+1048577 drwxr-xr-x 3 root root  4096 Jan 22 18:55 ..
+1048712 -rw------- 1 sam  sam  12827 Jan 27 21:58 .bash_history
+1051642 -rw-r--r-- 1 sam  sam    220 Feb 25  2020 .bash_logout
+1053724 -rw-r--r-- 1 sam  sam   3873 Jan 26 21:16 .bashrc
+1051680 drwx------ 3 sam  sam   4096 Jan 22 20:11 .cache
+1053030 drwx------ 5 sam  sam   4096 Jan 26 14:15 .config
+ 268296 drwx------ 3 sam  sam   4096 Jan 22 20:11 .local
+1051641 -rw-r--r-- 1 sam  sam    807 Feb 25  2020 .profile
+1051682 -rw-r--r-- 1 sam  sam      0 Jan 22 18:59 .sudo_as_admin_successful
+1049484 -rw------- 1 sam  sam   8067 Jan 29 20:53 .viminfo
+1049490 -rw-rw-r-- 2 sam  sam     29 Feb  1 10:49 file2.txt
+1049491 lrwxrwxrwx 1 sam  sam      9 Feb  1 10:59 file3.txt -> file1.txt
+1049490 -rw-rw-r-- 2 sam  sam     29 Feb  1 10:49 file4.txt
+##--символическая ссылка подсветилась красным после удаления file1.txt Поэтому file3.txt вывести нельзя, а file2 file4 можно--##
+sam@server1:~$ cat file2.txt file3.txt file4.txt
+hello world! Mya name is Sam
+cat: file3.txt: No such file or directory
+hello world! Mya name is Sam
+
+
+2. Дать созданным файлам другие, произвольные имена. Создать новую символическую ссылку. Переместить ссылки в другую директорию.
+--Выполнение--
+sam@server1:~$ mv file2.txt newfile2.txt
+sam@server1:~$ mv file4.txt lnnewfile2.txt
+sam@server1:~$ rm file3.txt
+sam@server1:~$ mv file1.txt newfile1.txt
+sam@server1:~$ ln -s newfile1.txt lnsnewfile1.txt
+sam@server1:~$ mkdir newfolder
+sam@server1:~$ mv lnsnewfile1.txt newfolder/
+sam@server1:~$ mv lnnewfile2.txt newfolder/
+sam@server1:~/newfolder$ ll
+total 12
+drwxrwxr-x 2 sam sam 4096 Feb  1 11:59 ./
+drwxr-xr-x 6 sam sam 4096 Feb  1 11:59 ../
+-rw-rw-r-- 2 sam sam   29 Feb  1 10:49 lnnewfile2.txt
+lrwxrwxrwx 1 sam sam   12 Feb  1 11:56 lnsnewfile1.txt -> newfile1.txt
+##--Символическая ссылка подсвечена красным и не работает при перемещении в другую дирректорию. Это связано с тем, что символические ссылки относятся к местоположению ссылки, а не к местоположению, в котором она была создана или открыта. Жесткая ссылка работает--##
+sam@server1:~/newfolder$ ln -s /home/sam/newfile1.txt lnsnewfile1.txt ##-- Меняем путь до файла чтобы работала символическая ссылка--##
+
+
+3. Создать два произвольных файла. Первому присвоить права на чтение, запись для владельца и группы, только на чтение — для всех. Второму присвоить права на чтение, запись — только для владельца. Сделать это в численном и символьном виде.
+--Выполнение--
+sam@server1:~/newfolder$ touch Myfile{1,2}
+sam@server1:~/newfolder$ chmod ug+rw o+r Myfile1
+sam@server1:~/newfolder$ chmod u=r,go-rw Myfile2
+sam@server1:~/newfolder$ ll
+total 12
+drwxrwxr-x 2 sam sam 4096 Feb  1 15:28 ./
+drwxr-xr-x 6 sam sam 4096 Feb  1 11:59 ../
+-rw-rw-r-- 1 sam sam    0 Feb  1 15:28 Myfile1
+-r-------- 1 sam sam    0 Feb  1 15:28 Myfile2
+-rw-rw-r-- 2 sam sam   29 Feb  1 10:49 lnnewfile2.txt
+lrwxrwxrwx 1 sam sam   22 Feb  1 15:26 lnsnewfile1.txt -> /home/sam/newfile1.txt
+sam@server1:~/newfolder$ chmod 664 Myfile1
+sam@server1:~/newfolder$ chmod 400 Myfile2
+
+
+4. Создать пользователя, обладающего возможностью выполнять действия от имени суперпользователя.
+--Выполнение--
+sam@server1:~$ sudo adduser superuser1
+Adding user `superuser1' ...
+Adding new group `superuser1' (1001) ...
+Adding new user `superuser1' (1001) with group `superuser1' ...
+Creating home directory `/home/superuser1' ...
+Copying files from `/etc/skel' ...
+New password:
+Retype new password:
+passwd: password updated successfully
+Changing the user information for superuser1
+Enter the new value, or press ENTER for the default
+        Full Name []: testsuperuser
+        Room Number []:
+        Work Phone []:
+        Home Phone []:
+        Other []:
+Is the information correct? [Y/n] y
+sam@server1:/$ sudo usermod -aG sudo superuser1
+##--Что бы пользователь стал супер пользователем и мог выполнять команды через sudo он добавляется в группу sudo. superuser1 в современных требованиях по безопасности не является приемлемым названием, но в целях обучения и для понятности добавил так))--##
+
+5. * Создать группу developer и несколько пользователей, входящих в нее. Создать директорию для совместной работы. Сделать так, чтобы созданные одними пользователями файлы могли изменять другие пользователи этой группы.
+--Выполнение--
+sam@server1:~$ groupadd developer
+sam@server1:~$ sudo useradd -m -G developer devuser1
+sam@server1:~$ sudo useradd -m -G developer devuser2
+sam@server1:~$ sudo useradd -m -G developer devuser3
+sam@server1:~$ mkdir devdir
+sam@server1:~$ sudo chown :developer devdir/
+
+
+6. * Создать в директории для совместной работы поддиректорию для обмена файлами, но чтобы удалять файлы могли только их создатели.
+--Выполнение--
+sam@server1:~/devdir$ mkdir share
+sam@server1:~/devdir$ sudo chown :developer share/
+sam@server1:~/devdir$ sudo chmod g+w share/
+sam@server1:~/devdir$ sudo chmod o+t share/
+
+
+
+7. * Создать директорию, в которой есть несколько файлов. Сделать так, чтобы открыть файлы можно было, только зная имя файла, а через ls список файлов посмотреть было нельзя.
+--Выполнение--
+sam@server1:~$ mkdir newdir1
+sam@server1:~$ touch newdir1/file{1..5}
+sam@server1:~$ sudo chmod -r newdir1
+sam@server1:~$ ls newdir1/
+ls: cannot open directory 'newdir1/': Permission denied
+sam@server1:~$ cat newdir1/file1
+it is file 1!!!
+sam@server1:~$
