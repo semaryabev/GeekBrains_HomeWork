@@ -1,0 +1,31 @@
+#!/bin/bash
+echo "Введите директорию"
+read dirname
+ 
+ 
+     for name_file in $dirname/* 
+ 
+        do
+ 
+        if [[ `basename $name_file` != 'ownersort.sh' ]] ; then
+ 
+                user_name=`ls -la $name_file | awk {'print $3; '} | sort | uniq | xargs echo`
+ 
+                mkdir -p $dirname/$user_name && chown -vR $user_name $dir
+ 
+                dirname=($dirname/$user_name)
+ 
+                cp -pv $name_file $dirname
+ 
+                rm -v $name_file
+ 
+                echo
+                echo "Копирование прошло успешно"
+         else
+ 
+         echo "Скрипт не переноситься"
+ 
+ 
+        fi
+ 
+done    
