@@ -1,0 +1,14 @@
+#!/bin/bash
+mkdir -p 20{10..20}/{01..12}
+for i in {2010..2020}
+do
+        var=1
+        for j in {01..12}
+        do
+                echo "file $var" > $i/$j/$var.txt
+                var+=1
+                echo "file $var" > $i/$j/$var.txt
+                var=1
+        done
+
+done

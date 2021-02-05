@@ -1,0 +1,40 @@
+#!/bin/bash
+#1. Написать скрипт, который удаляет из текстового файла пустые строки и заменяет маленькие символы на большие (воспользуйтесь tr или sed).#
+echo "Укажите файл для автоматического редактирования"
+read filename
+result1="script_result1.txt"
+result2="script_result2.txt"
+touch $result1
+touch $result2
+tr -s '\n' <$filename>  $result1
+tr [:lower:] [:upper:] <$result1> $result2
+cat $filename
+echo "----------------------------------------------"
+cat $result2
+--Результат выполнения--
+sam@server1:~$ ./my_first_script.sh
+Укажите файл для автоматического редактирования
+newfile1.txt
+uufjeHDSISoooSjOSjOJSoSJ
+
+
+IIskPKSpKSioOISjkOSjkIO
+IOSIIJSOSJkkpSPp
+
+
+
+IOSiOSIoKSosmoMS
+
+
+ISiSiJSiIJsiSJiwiWiwiJk
+
+
+009393884
+----------------------------------------------
+UUFJEHDSISOOOSJOSJOJSOSJ
+IISKPKSPKSIOOISJKOSJKIO
+IOSIIJSOSJKKPSPP
+IOSIOSIOKSOSMOMS
+ISISIJSIIJSISJIWIWIWIJK
+009393884
+sam@server1:~$
